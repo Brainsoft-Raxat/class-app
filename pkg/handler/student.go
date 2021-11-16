@@ -25,7 +25,7 @@ func (h *Handler) getById(c echo.Context) error {
 	}
 	student, err := h.services.Student.GetStudentById(studentId)
 	if err != nil {
-
+		return c.JSON(http.StatusInternalServerError, errorResponse{Status: err.Error()})
 	}
 	return c.JSON(http.StatusOK, student)
 }
@@ -62,7 +62,9 @@ func (h *Handler) deleteById(c echo.Context) error {
 	}
 
 	if err := h.services.DeleteStudentById(studentId); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusBadRequest, errorResponse{
+			Status: err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, statusResponse{

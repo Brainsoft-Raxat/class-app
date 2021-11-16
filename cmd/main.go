@@ -2,17 +2,12 @@ package main
 
 import (
 	"class-app/pkg/handler"
+	"class-app/pkg/repository"
 	"class-app/pkg/service"
 	"context"
-	"github.com/sirupsen/logrus"
-	"net/http"
-	"os"
-	"os/signal"
-	"time"
-
-	"class-app/pkg/repository"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -36,23 +31,24 @@ func main() {
 
 	handlers.InitRoutes(e)
 
+	e.Logger.Fatal(e.Start(viper.GetString("address")))
 
-	go func() {
-		if err := e.Start(viper.GetString("address")); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal("shutting down the server")
-		}
-	}()
-	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
-	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
-	<-quit
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err := e.Shutdown(ctx); err != nil {
-		e.Logger.Fatal(err)
-	}
+	//go func() {
+	//	if err := e.Start(viper.GetString("address")); err != nil && err != http.ErrServerClosed {
+	//		e.Logger.Fatal("shutting down the server")
+	//	}
+	//}()
+	//// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
+	//// Use a buffered channel to avoid missing signals as recommended for signal.Notify
+	//quit := make(chan os.Signal, 1)
+	//signal.Notify(quit, os.Interrupt)
+	//<-quit
+	//
+	//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	//defer cancel()
+	//if err := e.Shutdown(ctx); err != nil {
+	//	e.Logger.Fatal(err)
+	//}
 }
 
 func initConfig() error {
