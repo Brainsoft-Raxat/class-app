@@ -16,8 +16,14 @@ func main() {
 		logrus.Fatalf("error initializing configs: %s", err.Error())
 	}
 
+	logrus.Printf("Successfully initialized config files:\n")
+	for _ ,key := range viper.AllKeys() {
+		logrus.Printf("%s: %s\n", key, viper.GetString(key))
+	}
+
 	e := echo.New()
-	databaseUrl := viper.GetString("dbUrl")
+	databaseUrl := "postgres://" + viper.GetString("dbUser") + ":" + viper.GetString("dbPassword") + "@" + viper.GetString("dbHost") + ":" + viper.GetString("dbPort") + "/" + viper.GetString("dbName")
+
 	dbPool, err := pgxpool.Connect(context.Background(), databaseUrl)
 	if err != nil {
 		//logrus.Fatalf("unable to connect to database: %v\n", err)
@@ -31,7 +37,7 @@ func main() {
 
 	handlers.InitRoutes(e)
 
-	e.Logger.Fatal(e.Start(viper.GetString("address")))
+	e.Logger.Fatal(e.Start(":" + viper.GetString("port")))
 
 	//go func() {
 	//	if err := e.Start(viper.GetString("address")); err != nil && err != http.ErrServerClosed {
