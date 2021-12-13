@@ -7,6 +7,12 @@ import (
 
 type Repository struct {
 	Student
+	Authorization
+}
+
+type Authorization interface {
+	CreateTeacher(teacher models.Teacher) (int, error)
+	GetTeacher(email string, passwordHash string) (models.Teacher, error)
 }
 
 type Student interface {
@@ -19,6 +25,7 @@ type Student interface {
 
 func NewRepository(dbPool *pgxpool.Pool) *Repository {
 	return &Repository{
-		Student: NewStudentPostgres(dbPool),
+		Student:       NewStudentPostgres(dbPool),
+		Authorization: NewAuthPostgres(dbPool),
 	}
 }

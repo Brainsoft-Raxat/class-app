@@ -7,6 +7,7 @@ import (
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -15,11 +16,7 @@ func main() {
 	if err := initConfig(); err != nil {
 		logrus.Fatalf("error initializing configs: %s", err.Error())
 	}
-
-	logrus.Printf("Successfully initialized config files:\n")
-	for _ ,key := range viper.AllKeys() {
-		logrus.Printf("%s: %s\n", key, viper.GetString(key))
-	}
+	logrus.Printf("Successfully initialized config files.\n")
 
 	e := echo.New()
 	databaseUrl := "postgres://" + viper.GetString("dbUser") + ":" + viper.GetString("dbPassword") + "@" + viper.GetString("dbHost") + ":" + viper.GetString("dbPort") + "/" + viper.GetString("dbName")
@@ -35,6 +32,8 @@ func main() {
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 	handlers.InitRoutes(e)
 
 	e.Logger.Fatal(e.Start(":" + viper.GetString("port")))

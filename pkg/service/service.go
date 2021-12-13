@@ -7,6 +7,12 @@ import (
 
 type Service struct {
 	Student
+	Authorization
+}
+
+type Authorization interface {
+	CreateTeacher(teacher models.Teacher) (int, error)
+	GenerateToken(email string, password string) (string, error)
 }
 
 type Student interface {
@@ -19,6 +25,7 @@ type Student interface {
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
-		Student: NewStudentService(repos.Student),
+		Student:       NewStudentService(repos.Student),
+		Authorization: NewAuthService(repos.Authorization),
 	}
 }
