@@ -14,6 +14,7 @@ func NewStudentService(repo repository.Student) *StudentService {
 }
 
 func (s *StudentService) CreateStudent(student models.Student) (int, error) {
+	student.Password = generatePasswordHash(student.Password)
 	return s.repo.CreateStudent(student)
 }
 

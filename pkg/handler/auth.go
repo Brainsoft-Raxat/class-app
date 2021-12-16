@@ -34,8 +34,7 @@ func (h *Handler) signIn(c echo.Context) error {
 
 	token, err := h.services.Authorization.GenerateToken(input.Email, input.Password)
 	if err != nil {
-		//return c.JSON(http.StatusInternalServerError, errorResponse{Status: err.Error()})
-		return echo.ErrUnauthorized
+		return c.JSON(http.StatusInternalServerError, errorResponse{Status: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{

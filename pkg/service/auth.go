@@ -1,17 +1,11 @@
 package service
 
 import (
+	"class-app/configs"
 	"class-app/models"
 	"class-app/pkg/repository"
-	"crypto/sha1"
-	"fmt"
 	"github.com/golang-jwt/jwt"
 	"time"
-)
-
-const (
-	salt       = "ads56d148a9sd1a0sd65asd74"
-	SigningKey = "=s90a7df=sda06f9sa=d0fsdaf6"
 )
 
 type TokenClaims struct {
@@ -28,12 +22,12 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 }
 
 func (s *AuthService) CreateTeacher(teacher models.Teacher) (int, error) {
-	teacher.Password = s.generatePasswordHash(teacher.Password)
+	teacher.Password = generatePasswordHash(teacher.Password)
 	return s.repo.CreateTeacher(teacher)
 }
 
 func (s *AuthService) GenerateToken(email string, password string) (string, error) {
-	teacher, err := s.repo.GetTeacher(email, s.generatePasswordHash(password))
+	teacher, err := s.repo.GetTeacher(email, generatePasswordHash(password))
 	if err != nil {
 		return "", err
 	}
@@ -46,13 +40,5 @@ func (s *AuthService) GenerateToken(email string, password string) (string, erro
 			IssuedAt:  time.Now().Unix(),
 		},
 	})
-
-	return token.SignedString([]byte(SigningKey))
-}
-
-func (s *AuthService) generatePasswordHash(password string) string {
-	hash := sha1.New()
-	hash.Write([]byte(password))
-
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+	return token.SignedString([]byte(configs.SigningKey))
 }

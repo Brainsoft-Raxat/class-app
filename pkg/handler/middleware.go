@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"class-app/configs"
 	"class-app/pkg/service"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
@@ -15,7 +16,7 @@ const (
 var (
 	config = middleware.JWTConfig{
 		Claims:     &service.TokenClaims{},
-		SigningKey: []byte(service.SigningKey),
+		SigningKey: []byte(configs.SigningKey),
 	}
 )
 

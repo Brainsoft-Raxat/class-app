@@ -25,11 +25,20 @@ func (h *Handler) InitRoutes(e *echo.Echo) {
 	{
 		students := api.Group("/students")
 		{
-			students.POST("/", h.create)
-			students.GET("/", h.getAll)
-			students.DELETE("/", h.deleteAll)
-			students.GET("/:id", h.getById)
-			students.DELETE("/:id", h.deleteById)
+			students.POST("/create-student", h.createStudent)
+			students.GET("/get-all-students", h.getAllStudents)
+			students.DELETE("/delete-all-students", h.deleteAllStudents)
+			students.GET("/:id", h.getStudentById)
+			students.DELETE("/:id", h.deleteStudentById)
+		}
+
+		classes := api.Group("/classes")
+		{
+			classes.GET("/get-all-classes", h.getAllClasses)
+			class := classes.Group("/")
+			{
+				class.GET(":id/students", h.listClassStudents)
+			}
 		}
 	}
 }

@@ -19,7 +19,7 @@ func NewStudentPostgres(dbPool *pgxpool.Pool) *StudentPostgres {
 func (r *StudentPostgres) CreateStudent(student models.Student) (int, error) {
 	var id int
 
-	err := r.dbPool.QueryRow(context.Background(), "INSERT INTO students (first_name, last_name, gender, status) VALUES ($1, $2, $3, $4) RETURNING id", student.FirstName, student.LastName, student.Gender, student.Status).Scan(&id)
+	err := r.dbPool.QueryRow(context.Background(), "INSERT INTO students (email, password_hash, first_name, last_name, gender, status, class_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", student.Email, student.Password, student.FirstName, student.LastName, student.Gender, student.Status, student.ClassId).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -29,7 +29,7 @@ func (r *StudentPostgres) CreateStudent(student models.Student) (int, error) {
 
 func (r *StudentPostgres) GetAllStudents() ([]models.Student, error) {
 	var students []models.Student
-	rows, err := r.dbPool.Query(context.Background(), "SELECT * FROM students")
+	rows, err := r.dbPool.Query(context.Background(), "SELECT id, email, first_name, last_name, gender, status, class_id FROM students")
 	if err != nil {
 		return nil, err
 	}
@@ -40,11 +40,13 @@ func (r *StudentPostgres) GetAllStudents() ([]models.Student, error) {
 			return nil, err
 		}
 		student := models.Student{
-			Id:        values[0].(int32),
-			FirstName: values[1].(string),
-			LastName:  values[2].(string),
-			Gender:    values[3].(string),
-			Status:    values[4].(bool),
+			Id:        int(values[0].(int32)),
+			Email:     values[1].(string),
+			FirstName: values[2].(string),
+			LastName:  values[3].(string),
+			Gender:    values[4].(string),
+			Status:    values[5].(bool),
+			ClassId:   int(values[6].(int32)),
 		}
 
 		students = append(students, student)
@@ -55,26 +57,22 @@ func (r *StudentPostgres) GetAllStudents() ([]models.Student, error) {
 
 func (r *StudentPostgres) GetStudentById(studentId int) (models.Student, error) {
 	var student models.Student
+	var id int32
+	var classId int32
 
-	rows, err := r.dbPool.Query(context.Background(), "SELECT * FROM students WHERE id=$1", studentId)
-	if err != nil {
+	if err := r.dbPool.QueryRow(context.Background(), "SELECT id, email, first_name, last_name, gender, status, class_id FROM students WHERE id=$1", studentId).Scan(
+		&id,
+		&student.Email,
+		&student.FirstName,
+		&student.LastName,
+		&student.Gender,
+		&student.Status,
+		&classId,
+	); err != nil {
 		return models.Student{}, err
 	}
-
-	if !rows.Next() {
-		return models.Student{}, errors.New(fmt.Sprintf("no user with id=%d", studentId))
-	}
-	values, err := rows.Values()
-	if err != nil {
-		return models.Student{}, err
-	}
-	student = models.Student{
-		Id:        values[0].(int32),
-		FirstName: values[1].(string),
-		LastName:  values[2].(string),
-		Gender:    values[3].(string),
-		Status:    values[4].(bool),
-	}
+	student.Id = int(id)
+	student.ClassId = int(classId)
 
 	return student, nil
 }

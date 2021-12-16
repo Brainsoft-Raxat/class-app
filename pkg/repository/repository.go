@@ -6,8 +6,9 @@ import (
 )
 
 type Repository struct {
-	Student
 	Authorization
+	Student
+	Class
 }
 
 type Authorization interface {
@@ -23,9 +24,15 @@ type Student interface {
 	DeleteStudentById(studentId int) error
 }
 
+type Class interface {
+	GetAllClasses() ([]models.Class, error)
+	ListClassStudents(classId int) ([]models.Student, error)
+}
+
 func NewRepository(dbPool *pgxpool.Pool) *Repository {
 	return &Repository{
 		Student:       NewStudentPostgres(dbPool),
 		Authorization: NewAuthPostgres(dbPool),
+		Class:         NewClassPostgres(dbPool),
 	}
 }
