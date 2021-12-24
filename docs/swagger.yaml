@@ -1,0 +1,353 @@
+basePath: /
+definitions:
+  handler.errorResponse:
+    properties:
+      status:
+        type: string
+    type: object
+  handler.signInInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  handler.statusResponse:
+    properties:
+      status:
+        type: string
+    type: object
+  models.Class:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Student:
+    properties:
+      class_id:
+        type: integer
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      password:
+        type: string
+      status:
+        type: boolean
+    type: object
+  models.Teacher:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      password:
+        type: string
+      phone_no:
+        type: string
+    required:
+    - email
+    - first_name
+    - gender
+    - last_name
+    - password
+    - phone_no
+    type: object
+host: localhost:1323
+info:
+  contact: {}
+  description: This is a sample server.
+  title: Class-App
+  version: "1.0"
+paths:
+  /api/classes/{id}/students:
+    get:
+      consumes:
+      - '*/*'
+      description: list class students by class id.
+      operationId: list-class-students
+      parameters:
+      - description: class id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Student'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List Class Students By Class ID.
+      tags:
+      - classes
+  /api/classes/get-all-classes:
+    get:
+      consumes:
+      - '*/*'
+      description: get all classes.
+      operationId: get-all-classes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Class'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get All Classes.
+      tags:
+      - classes
+  /api/students/{id}:
+    delete:
+      consumes:
+      - '*/*'
+      description: delete student by id.
+      operationId: delete-student-by-id
+      parameters:
+      - description: student id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.statusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Student By ID.
+      tags:
+      - students
+    get:
+      consumes:
+      - '*/*'
+      description: get student by id.
+      operationId: get-student-by-id
+      parameters:
+      - description: student id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Student'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Student By ID.
+      tags:
+      - students
+  /api/students/create-student:
+    post:
+      consumes:
+      - application/json
+      description: create student.
+      operationId: create-student
+      parameters:
+      - description: student id
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Student'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Student.
+      tags:
+      - students
+  /api/students/delete-all-students:
+    delete:
+      consumes:
+      - '*/*'
+      description: delete all students.
+      operationId: delete-all-students
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.statusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete All Students.
+      tags:
+      - students
+  /api/students/get-all-students:
+    get:
+      consumes:
+      - '*/*'
+      description: get all students.
+      operationId: get-all-students
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Student'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get All Students.
+      tags:
+      - students
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Sign in as a teacher.
+      operationId: sign-in
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.signInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: SignIn
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: create account for teacher.
+      operationId: sign-up
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Teacher'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: SignUp
+      tags:
+      - auth
+schemes:
+- http
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -5,12 +5,25 @@ import (
 	"class-app/pkg/repository"
 	"class-app/pkg/service"
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/labstack/echo/v4"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
+
+// @title Class-App
+// @version 1.0
+// @description This is a sample server.
+
+// @host localhost:1323
+// @BasePath /
+// @schemes http
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 func main() {
 	if err := initConfig(); err != nil {

@@ -1,9 +1,12 @@
 package handler
 
 import (
+	_ "class-app/docs"
 	"class-app/pkg/service"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/swaggo/echo-swagger"
 )
 
 type Handler struct {
@@ -41,4 +44,5 @@ func (h *Handler) InitRoutes(e *echo.Echo) {
 			}
 		}
 	}
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 }
