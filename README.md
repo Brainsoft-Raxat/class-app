@@ -2,7 +2,7 @@
 ## Simple REST API With Basic CRUD Operations
 
 ## Available CRUD operations:
-- Create Student
+- Create Student "/api/students/create-student"
 - Get Student By ID
 - Get All Students
 - Delete All Students
